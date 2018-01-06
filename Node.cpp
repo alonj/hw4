@@ -5,6 +5,7 @@
 #include "Node.h"
 #include <cstddef>
 
+using namespace std;
 
 /*
  * find the place of the key in the children array to insert a new child
@@ -12,10 +13,21 @@
 int find_child_place(Node *parent, Node *child){
     int i = 0;
     Key* childKey = child->get_key();
-    while(*(parent._chilren[i])<*childKey){
+    while(*(parent->get_child(i)->get_key())<*childKey && parent->get_child(i) != nullptr){
         i++;
     }
     return i;
+}
+
+/*
+ * update key to match highest key of children
+ * */
+void Node::update_key(){
+    int i = 0;
+    while(this->get_child(i+1) != nullptr){
+        i++;
+    }
+    this->set_key(this->get_child(i)->get_key());
 }
 
 /*
@@ -27,7 +39,11 @@ void Node::add_child(Node *child, int place) {
         _children[i]=_children[i-1];
     }
     _children[place]=child;
-    this->isLeaf = false;
+    if(this->_isLeaf = true){
+        this->_isLeaf = false;
+        this->total_children = 0;
+    }
+    this->total_children = total_children + child->get_total_child();
 }
 
 /*
@@ -49,9 +65,9 @@ void Node::remove_child(Node *child) {
     }
 }
 
-void Node::def_parent(Node *newParent, bool init=false) {
+void Node::set_parent(Node *newParent, bool init = false) {
     int place=0;
-    if(this->_parent!=NULL) //TODO CSTDDEF
+    if(this->_parent!= nullptr)
             {
                 this->_parent->remove_child(this);
             }
@@ -63,5 +79,6 @@ void Node::def_parent(Node *newParent, bool init=false) {
      else {
         place = find_child_place(*newParent, this);
     }
-    newParent->add_child(this, place); //TODO CHANGE TMPPLACE TO SEARCH RESULT
+    newParent->add_child(this, place);
+    this->update_key();
 }
