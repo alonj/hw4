@@ -17,6 +17,7 @@ int find_child_place(Node *parent, Node *child){
         i++;
     }
     return i;
+
 }
 
 /*
@@ -28,6 +29,15 @@ void Node::update_key(){
         i++;
     }
     this->set_key(this->get_child(i)->get_key());
+}
+
+void Node::update_val(){
+    int i = 0;
+    while(this->get_child(i) != nullptr){
+        if (get_child(i)->get_value() > this->_value){
+            this->_value = get_child(i)->get_value();
+        }
+    }
 }
 
 /*
@@ -81,4 +91,5 @@ void Node::set_parent(Node *newParent, bool init = false) {
     }
     newParent->add_child(this, place);
     this->update_key();
+    this->update_val();
 }
