@@ -5,6 +5,7 @@
 #include "BalancedTreeK.h"
 #include "Node.h"
 #include "Value.h"
+#include "ParameterK.h"
 
 Node* search_key(Key* key){
     Node* y = _root;
@@ -54,7 +55,7 @@ Node* insert_and_split(Node* y_parent, Node* new_node){
     Node new_internal(y_parent->get_value(),y_parent->get_key()); // define key and value
     int place=0;
     int split_point=0;
-    while(*(y->get_child(place)->get_key()) < *nkey && y->get_child(place)->get_key() != nullptr){
+    while(*(y_parent->get_child(place)->get_key()) < *nkey && y_parent->get_child(place)->get_key() != nullptr){
         place++;
     }
     if(place>k-1){
@@ -139,11 +140,89 @@ const Key* BalancedTreeK::Select(unsigned index) const {
         return x->get_key();
     }
     int n = 0;
-    while(!x->isLeaf()) { // TODO: count the statistic order
-        while (index < x->get_child(n) + x->get_child(n + 1) && n <= x->get_child_count() - 1) {
-            // index -=
-            n++;
+    if(index > x->get_total_child()-1)
+    {
+        return nullptr;
+    }
+    else {
+        while (!x->isLeaf()) { // TODO: count the statistic order
+            int count_sum_siblings = 0;
+            int i = 0;
+            while (index > count_sum_siblings + x->get_child(i)->get_total_child()) {
+                count_sum_siblings += x->get_child(i)->get_total_child();
+                i++;
+            }
+            x = x->get_child(i);
+            index -= count_sum_siblings;
         }
-        x = x->get_child(n);
+        return x;
+    }
+}
+
+void BalancedTreeK::Delete(const Key *dkey) {
+    
+}
+
+const Value* BalancedTreeK::GetMaxValue(const Key *key1, const Key *key2) const {
+    int left_boundary;
+    int right_boundary;
+    unsigned index = 0;
+    Key* zero_key = this->Select(0);
+    if(*(this->_root->get_key())<*key1)
+    {
+        return nullptr;
+    }
+    else {
+        if (*key1 < *key2) { // O(2*log(n))
+            left_boundary = this->Rank(key1);
+            right_boundary = this->Rank(key2);
+            if (left_boundary == 0 && (*zero_key < *key1 || *key1 < *zero_key)) {
+                left_boundary = -1;
+            }
+            if (right_boundary == 0 && (*zero_key < *key2 || *key2 < *zero_key)) {
+                right_boundary = -1;
+            }
+        } else {
+            left_boundary = this->Rank(key2);
+            right_boundary = this->Rank(key1);
+            if (left_boundary == 0 && (*zero_key < *key2 || *key2 < *zero_key)) {
+                left_boundary = -1;
+            }
+            if (right_boundary == 0 && (*zero_key < *key1 || *key1 < *zero_key)) {
+                right_boundary = -1;
+            }
+        }
+
+        if (left_boundary == -1) {
+            Node *y = _root;
+            while (!y->isLeaf()) {
+                int i = 0;
+                while (*(y->get_child(i)->get_key()) < *left_boundary && y->get_child(i)->get_key() != nullptr) {
+                    i++;
+                }
+                y = y->get_child(i);
+            }
+            left_boundary = this->Rank(y->get_key());
+        }
+        if (right_boundary == -1) {
+            Node *y = _root;
+            while (!y->isLeaf()) {
+                int i = 0;
+                while (*(y->get_child(i)->get_key()) < *left_boundary && y->get_child(i)->get_key() != nullptr) {
+                    i++;
+                }
+                y = y->get_child(i);
+            }
+            right_boundary = this->Rank(y->get_key()) - 1;
+        }
+        Value *max = this->Search(key1);
+        for (int i = left_boundary; i <= right_boundary; i++) {
+            Key *temp_key = this->Select(i);
+            Value *temp_val = this->Search(temp_key);
+            if (*max < *temp_val) {
+                max = temp_val;
+            }
+        }
+        return max;
     }
 }
