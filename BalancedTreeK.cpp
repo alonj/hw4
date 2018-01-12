@@ -3,14 +3,11 @@
 //
 #include "Key.h"
 #include "BalancedTreeK.h"
-#include "Node.h"
-#include "Value.h"
-#include "ParameterK.h"
 
 /*
  * Get a pointer to Node of known Key
  * */
-Node* BalancedTreeK::search_key(Key* key) const{
+Node* BalancedTreeK::search_key(const Key* key) const{
     Node* y = _root;
     while(!y->isLeaf()){
         int i=0;
@@ -35,24 +32,31 @@ Node* BalancedTreeK::search_key(Key* key) const{
 /*
  * Initialize Balanced Tree structure with root and two children (min, max)
  * */
-void Init(const Key *min, const Key *max) {
+/*void Init(const Key *min, const Key *max) {
     Key* minKey=min->clone();
     Key* maxKey=max->clone();
     Key* rootKey=new Key();
-    Value defaultVal;
-    Node minNode(*defaultVal, *minKey);
-    Node maxNode(*defaultVal, *maxKey);
-    Node root(*defaultVal, *maxKey);
+    Value* defaultVal = new Value();
+    Node minNode(nullptr, minKey);
+    Node maxNode(nullptr, maxKey);
+    Node* root = new Node;
     minNode.set_parent(root, true);
     maxNode.set_parent(root, true);
-    this->_root=*root;
-}
+    this->_root=root;
+}*/
 
 /*
  * Constructor
  * */
 BalancedTreeK::BalancedTreeK(const Key *min, const Key *max){
-    Init(min, max);
+    Key* minKey=min->clone();
+    Key* maxKey=max->clone();
+    Node minNode(nullptr, minKey);
+    Node maxNode(nullptr, maxKey);
+    auto* root = new Node;
+    minNode.set_parent(root, true);
+    maxNode.set_parent(root, true);
+    this->_root=root;
 }
 
 
@@ -64,10 +68,10 @@ Node* insert_and_split(Node* y_parent, Node new_node){
         new_node.set_parent(y_parent);
         return nullptr;
     }
-    Node new_internal(y_parent->get_value(),y_parent->get_key()); // define key and value
+    auto new_internal = new Node(y_parent->get_value(),y_parent->get_key()); // define key and value //todo WHAT's AUTO
     int place=0;
     int split_point=0;
-    while(*(y_parent->get_child(place)->get_key()) < *nkey && y_parent->get_child(place)->get_key() != nullptr){
+    while(*(y_parent->get_child(place)->get_key()) < *new_node.get_key() && y_parent->get_child(place)->get_key() != nullptr){
         place++;
     }
     if(place>K-1){
@@ -79,7 +83,7 @@ Node* insert_and_split(Node* y_parent, Node new_node){
     for(int i=split_point; i < 2*K - 1; i++){
         y_parent->get_child(i)->set_parent(new_internal);
     }
-    return *new_internal;
+    return new_internal;
 
 }
 
@@ -90,7 +94,7 @@ Node* insert_and_split(Node* y_parent, Node new_node){
 void BalancedTreeK::Insert(const Key* nkey, const Value* nval){
     Value* val1 = nval->clone();
     Key* key1 = nkey->clone();
-    Node new_node(val1, key1);
+    auto* new_node = new Node(val1, key1);
     Node* y = _root;
     while(!y->isLeaf()){
         int i=0;
@@ -100,11 +104,11 @@ void BalancedTreeK::Insert(const Key* nkey, const Value* nval){
         y = y->get_child(i);
     }
     Node* x = y->get_parent();
-    insert_and_split(x, new_node);
+    insert_and_split(x, *new_node);
     while(x != _root){
         x = x->get_parent();
-        if(new_node != nullptr){
-            new_node = insert_and_split(x, new_node);
+        if(new_node != nullptr){ //TODO recheck the algorithm
+            new_node = insert_and_split(x, *new_node);
         }
         else {
             x->update_key();
@@ -112,9 +116,9 @@ void BalancedTreeK::Insert(const Key* nkey, const Value* nval){
         }
     }
     if(new_node != nullptr){
-        Node new_root(_root->get_value(),_root->get_key());
+        auto* new_root = new Node(_root->get_value(),_root->get_key());
         x->set_parent(new_root);
-        new_node.set_parent(new_root);
+        new_node->set_parent(new_root);
         _root = new_root;
     }
 }
@@ -124,13 +128,7 @@ void BalancedTreeK::Insert(const Key* nkey, const Value* nval){
  * Search value by known Key
  * */
 Value* BalancedTreeK::Search(const Key *key) const {
-    Node* y = search_key(key);
-    if(y == nullptr){
-        return nullptr;
-    }
-    else{
-        return y->get_value();
-    }
+    return search_key(key)->get_value();
 }
 
 
@@ -143,7 +141,7 @@ unsigned BalancedTreeK::Rank(const Key *key) const {
         unsigned rank = 1;
         Node *y = x->get_parent();
         while (y != nullptr) {
-            int i = 0;
+            int i =0;
             while (x->get_parent()->get_child(i) != x) {
                 rank += x->get_parent()->get_child(i)->get_total_child();
                 i++;
@@ -186,7 +184,7 @@ const Key* BalancedTreeK::Select(unsigned index) const {
             x = x->get_child(i);
             index -= count_sum_siblings;
         }
-        return x;
+        return x->get_key();
     }
 }
 
@@ -250,20 +248,13 @@ const Value* BalancedTreeK::GetMaxValue(const Key *key1, const Key *key2) const 
 }*/
 
 const Value* BalancedTreeK::GetMaxValue(const Key *key1, const Key *key2) const{
-    if(*(this->_root->get_key())<*key1 || *key2 < *key1)
-    {
+    if(*(this->_root->get_key())<*key1 || *key2 < *key1) {
         return nullptr;
     }
     Key* zero_key = this->Select(0)->clone();
-    int left_boundary = this->Rank(key1);
-    int right_boundary = this->Rank(key2);
+    unsigned left_boundary = this->Rank(key1);
+    unsigned right_boundary = this->Rank(key2);
     if (left_boundary == 0 && (*zero_key < *key1 || *key1 < *zero_key)) {
-        left_boundary = -1;
-    }
-    if (right_boundary == 0 && (*zero_key < *key2 || *key2 < *zero_key)) {
-        right_boundary = -1;
-    }
-    if (left_boundary == -1) {
         Node *y = _root;
         while (!y->isLeaf()) {
             int i = 0;
@@ -274,7 +265,7 @@ const Value* BalancedTreeK::GetMaxValue(const Key *key1, const Key *key2) const{
         }
         left_boundary = this->Rank(y->get_key());
     }
-    if (right_boundary == -1) {
+    if (right_boundary == 0 && (*zero_key < *key2 || *key2 < *zero_key)) {
         Node *y = _root;
         while (!y->isLeaf()) {
             int i = 0;
@@ -287,7 +278,7 @@ const Value* BalancedTreeK::GetMaxValue(const Key *key1, const Key *key2) const{
     }
     Value* max = nullptr;
     Node* x = search_key(this->Select(left_boundary));
-    Node *x_parent = x->get_parent();
+    Node* x_parent = x->get_parent();
     while(*(x_parent->get_key()) < *this->Select(right_boundary)) { // define the while
         for(int i = 0; i < x_parent->get_child_count(); i++){
             if(*max < *(x_parent->get_child(i)->get_value()) && *x->get_key() < *(x_parent->get_child(i)->get_key())){

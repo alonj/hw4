@@ -3,7 +3,6 @@
 //
 
 #include "Node.h"
-#include <cstddef>
 
 using namespace std;
 
@@ -45,11 +44,11 @@ void Node::update_val(){
  */
 void Node::add_child(Node *child, int place) {
     this->count_children++;
-    for(i=count_children; i>place; i--){
+    for(int i=count_children; i>place; i--){
         _children[i]=_children[i-1];
     }
     _children[place]=child;
-    if(this->_isLeaf = true){
+    if(this->_isLeaf){
         this->_isLeaf = false;
         this->total_children = 0;
     }
@@ -61,17 +60,17 @@ void Node::add_child(Node *child, int place) {
  * */
 void Node::remove_child(Node *child) {
     int place = 0;
-    for(i=0;i<count_children;i++){
+    for(int i=0;i<count_children;i++){
         if(_children[i]==child){
             place=i;
         }
     }
-    for(i=place;i<count_children;i++){
+    for(int i=place;i<count_children;i++){
         _children[i]=_children[i+1];
     }
     count_children--;
     if(count_children==0){
-        isLeaf = true;
+        this->_isLeaf = true;
     }
 }
 
@@ -86,8 +85,8 @@ void Node::set_parent(Node *newParent, bool init = false) {
     {
         place=newParent->count_children;
     }
-     else {
-        place = find_child_place(*newParent, this);
+    else {
+        place = find_child_place(newParent, this);
     }
     newParent->add_child(this, place);
     this->update_key();

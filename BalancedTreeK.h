@@ -17,7 +17,7 @@ private:
 public:
     BalancedTreeK(const Key* min, const Key* max);
     ~BalancedTreeK(); // TODO: how to destruct the object
-    Node* search_key(Key* key) const ;
+    Node* search_key(const Key* key) const;
     void Insert(const Key* nkey, const Value* nval);
     void Delete(const Key* dkey);
     Value* Search(const Key* key) const;

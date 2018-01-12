@@ -20,9 +20,13 @@ private:
     Node* _children[2*K-1];
     Node* _parent;
 public:
-    Node(Value* nvalue, Key* nkey){
+    explicit Node(Value* nvalue = nullptr, Key* nkey = nullptr){
         _value=nvalue->clone();
-        _key=nkey;};
+        _key=nkey;
+        _parent = nullptr;
+        for (auto &i : _children) {
+                i = nullptr;
+        }};
     ~Node();
     void add_child(Node* child, int place);
     void remove_child(Node* child);
