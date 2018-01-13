@@ -23,11 +23,7 @@ int find_child_place(Node *parent, Node *child){
  * update key to match highest key of children
  * */
 void Node::update_key(){
-    int i = 0;
-    while(this->get_child(i+1) != nullptr){
-        i++;
-    }
-    this->set_key(this->get_child(i)->get_key());
+    this->set_key(this->get_child(count_children-1)->get_key());
 }
 
 void Node::update_val(){

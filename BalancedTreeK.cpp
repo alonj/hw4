@@ -112,7 +112,7 @@ void BalancedTreeK::Insert(const Key* nkey, const Value* nval){
         }
     }
     if(new_node != nullptr){
-        auto* new_root = new Node(_root->get_value(),_root->get_key());
+        auto* new_root = new Node;
         x->set_parent(new_root);
         new_node->set_parent(new_root);
         _root = new_root;
