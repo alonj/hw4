@@ -68,7 +68,7 @@ Node* insert_and_split(Node* y_parent, Node new_node){
         new_node.set_parent(y_parent);
         return nullptr;
     }
-    auto new_internal = new Node(y_parent->get_value(),y_parent->get_key()); // define key and value //todo WHAT's AUTO
+    auto new_internal = new Node(y_parent->get_value(),y_parent->get_key()); // define key and value
     int split_point = K;
     /*
      * If new node is larger than mid-point node, split the array after the middle point (k-1 nodes remain in new parent)
