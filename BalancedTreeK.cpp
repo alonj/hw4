@@ -30,32 +30,16 @@ Node* BalancedTreeK::search_key(const Key* key) const{
 }
 
 /*
- * Initialize Balanced Tree structure with root and two children (min, max)
- * */
-/*void Init(const Key *min, const Key *max) {
-    Key* minKey=min->clone();
-    Key* maxKey=max->clone();
-    Key* rootKey=new Key();
-    Value* defaultVal = new Value();
-    Node minNode(nullptr, minKey);
-    Node maxNode(nullptr, maxKey);
-    Node* root = new Node;
-    minNode.set_parent(root, true);
-    maxNode.set_parent(root, true);
-    this->_root=root;
-}*/
-
-/*
  * Constructor
  * */
 BalancedTreeK::BalancedTreeK(const Key *min, const Key *max){
-    Key* minKey=min->clone();
-    Key* maxKey=max->clone();
-    Node minNode(nullptr, minKey);
-    Node maxNode(nullptr, maxKey);
+    auto* minKey=min->clone();
+    auto* maxKey=max->clone();
+    auto* minNode = new Node(nullptr, minKey);
+    auto* maxNode = new Node(nullptr, maxKey);
     auto* root = new Node;
-    minNode.set_parent(root, true);
-    maxNode.set_parent(root, true);
+    minNode->set_parent(root, true);
+    maxNode->set_parent(root, true);
     this->_root=root;
 }
 
@@ -68,7 +52,7 @@ Node* insert_and_split(Node* y_parent, Node new_node){
         new_node.set_parent(y_parent);
         return nullptr;
     }
-    auto new_internal = new Node(y_parent->get_value(),y_parent->get_key()); // define key and value
+    auto* new_internal = new Node(y_parent->get_value(),y_parent->get_key()); // define key and value
     int split_point = K;
     /*
      * If new node is larger than mid-point node, split the array after the middle point (k-1 nodes remain in new parent)
@@ -88,14 +72,14 @@ Node* insert_and_split(Node* y_parent, Node new_node){
  * Insert new node (key, val) into the tree
  * */
 void BalancedTreeK::Insert(const Key* nkey, const Value* nval){
-    Value* val1 = nval->clone();
-    Key* key1 = nkey->clone();
-    auto* new_node = new Node(val1, key1);
+    Key* key = nkey->clone();
+    Value* val = nval->clone();
+    auto* new_node = new Node(val, key);
     Node* y = _root;
-    while(!y->isLeaf()){
-        int i=0;
-        while(*(y->get_child(i)->get_key()) < *nkey && y->get_child(i)->get_key() != nullptr){
-            i++;
+    while(y->isLeaf() == false){
+        int i=y->get_child_count()-1;
+        while(*key < *(y->get_child(i)->get_key()) && i > 0){
+            i--;
         }
         y = y->get_child(i);
     }
@@ -164,7 +148,6 @@ const Key* BalancedTreeK::Select(unsigned index) const {
     else if(x->isLeaf()){
         return x->get_key();
     }
-    int n = 0;
     if(index > x->get_total_child()-1)
     {
         return nullptr;

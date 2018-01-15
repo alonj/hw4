@@ -13,10 +13,9 @@ using namespace std;
 class BalancedTreeK{
 private:
     Node* _root;
-    int k = K;
 public:
     BalancedTreeK(const Key* min, const Key* max);
-    ~BalancedTreeK(); // TODO: how to destruct the object
+    ~BalancedTreeK(){}; // TODO: how to destruct the object
     Node* search_key(const Key* key) const;
     void Insert(const Key* nkey, const Value* nval);
     void Delete(const Key* dkey);
