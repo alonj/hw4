@@ -61,7 +61,8 @@ Node* insert_and_split(Node* y_parent, Node new_node){
     if(*(y_parent->get_child(K)->get_key()) < *new_node.get_key()) {
         split_point++;
     }
-    for(int i=split_point; i < 2*K - 2; i++){
+    for(int i=split_point; i < 2*K - 1; i++){
+        cout<<i<<endl;
         y_parent->get_child(i)->set_parent(new_internal);
     }
     return new_internal;
@@ -97,6 +98,8 @@ void BalancedTreeK::Insert(const Key* nkey, const Value* nval){
     }
     if(z != nullptr){
         auto* new_root = new Node;
+        z->update_key();
+        z->update_val();
         x->set_parent(new_root);
         z->set_parent(new_root);
         this->_root = new_root;

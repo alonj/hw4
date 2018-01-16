@@ -52,7 +52,7 @@ void Node::update_val(){
  * inserts child to children array in correct place, moves keys "greater than" to the right
  */
 void Node::add_child(Node *child, int place) {
-    for(int i=count_children+1; i>place; i--){
+    for(int i=count_children; i>place; i--){
         _children[i]=_children[i-1];
     }
     _children[place]=child;
@@ -64,7 +64,7 @@ void Node::add_child(Node *child, int place) {
     while(_children[count_children] != nullptr) {
         count_children++;
     }
-    this->total_children = total_children + child->get_total_child();
+    this->total_children = total_children + child->get_total_child(); // todo - check if counts correctly
 }
 
 /*
@@ -80,8 +80,13 @@ void Node::remove_child(Node *child) {
     for(int i=place;i<count_children;i++){
         _children[i]=_children[i+1];
     }
+    cout<<this<<": "<<count_children<<" before"<<endl;
     count_children--;
-    if(count_children==0){
+    cout<<this<<": "<<count_children<<" after"<<endl;
+    for(int i = count_children; i < 2*K-1; i++) {
+        this->_children[i] = nullptr;
+    }
+    if(count_children == 0){
         this->_isLeaf = true;
     }
 }
@@ -108,5 +113,4 @@ Node::~Node(){
     /*delete _isLeaf;
     delete count_children;
     delete total_children;*/
-    cout<<"Node deleted"<<endl;
 }

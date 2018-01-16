@@ -36,8 +36,7 @@ public:
         count_children = 0;
         total_children = 1;
         _isLeaf = true;
-        _minKey = _key;
-        std::cout<<"Node created"<<std::endl;};
+        _minKey = _key; };
     ~Node();
     void add_child(Node* child, int place);
     void remove_child(Node* child);
