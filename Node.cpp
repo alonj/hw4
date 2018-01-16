@@ -34,6 +34,7 @@ int find_child_place(Node *parent, Node *child){
 void Node::update_key(){
     if(!_isLeaf) {
         this->set_key(this->get_child(count_children - 1)->get_key());
+        this->_minKey = this->get_child(0)->get_key();
     }
 }
 

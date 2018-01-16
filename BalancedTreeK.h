@@ -14,8 +14,8 @@ class BalancedTreeK{
 private:
     Node* _root;
 public:
-    BalancedTreeK(const Key* min, const Key* max){cout<<"Tree created"<<endl;};
-    ~BalancedTreeK(){}; // TODO: how to destruct the object
+    BalancedTreeK(const Key* min, const Key* max);
+    ~BalancedTreeK(); // TODO: BOM
     Node* search_key(const Key* key) const;
     void Insert(const Key* nkey, const Value* nval);
     void Delete(const Key* dkey);

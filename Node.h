@@ -18,6 +18,7 @@ private:
     int count_children;
     int total_children;
     Key* _key;
+    Key* _minKey;
     Node* _children[2*K-1];
     Node* _parent;
 public:
@@ -35,6 +36,7 @@ public:
         count_children = 0;
         total_children = 1;
         _isLeaf = true;
+        _minKey = _key;
         std::cout<<"Node created"<<std::endl;};
     ~Node();
     void add_child(Node* child, int place);
@@ -44,6 +46,7 @@ public:
     void update_key();
     void update_val();
     Key* get_key(){return _key;};
+    Key* get_minKey(){return _minKey;};
     Value* get_value(){return _value;};
     Node* get_child(int index){return _children[index];};
     Node* get_parent(){return _parent;};
