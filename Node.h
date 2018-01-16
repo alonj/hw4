@@ -6,6 +6,7 @@
 #include "Key.h"
 #include "Value.h"
 #include <cstddef>
+#include <iostream>
 
 #ifndef HW4_NODE_H
 #define HW4_NODE_H
@@ -33,8 +34,9 @@ public:
         }
         count_children = 0;
         total_children = 1;
-        _isLeaf = true;};
-    ~Node(){};
+        _isLeaf = true;
+        std::cout<<"Node created"<<std::endl;};
+    ~Node();
     void add_child(Node* child, int place);
     void remove_child(Node* child);
     void set_parent(Node *newParent, bool init = false);

@@ -76,7 +76,7 @@ void BalancedTreeK::Insert(const Key* nkey, const Value* nval){
     Value* val = nval->clone();
     auto* new_node = new Node(val, key);
     Node* y = _root;
-    while(y->isLeaf() == false){
+    while(!y->isLeaf()){
         int i=y->get_child_count()-1;
         while(*key < *(y->get_child(i)->get_key()) && i > 0){
             i--;
@@ -153,7 +153,7 @@ const Key* BalancedTreeK::Select(unsigned index) const {
         return nullptr;
     }
     else {
-        while (!x->isLeaf()) { // TODO: count the statistic order
+        while (!x->isLeaf()) {
             int count_sum_siblings = 0;
             int i = 0;
             while (index > count_sum_siblings + x->get_child(i)->get_total_child()) {
@@ -167,8 +167,65 @@ const Key* BalancedTreeK::Select(unsigned index) const {
     }
 }
 
-void BalancedTreeK::Delete(const Key *dkey) {
+Node* borrow_and_merge(Node* y){
+    Node* z = y->get_parent();
+    int y_place = 0;
+    Node* x = nullptr;
+    while(z->get_child(y_place) != y){
+        y_place++;
+    }
+    if(y_place == 0){
+        x = z->get_child(y_place+1);
+    }
+    else{
+        x = z->get_child(y_place-1);
+    }
+    if(y->get_child_count() + x->get_child_count() > 2*K-1){
+        int i = 0;
+        while(y->get_child_count()<K){
+            x->get_child(i)->set_parent(y);
+            i++;
+        }
+    }
+    else{
+        int i = 0;
+        while(y->get_child_count() > 0){
+            y->get_child(i)->set_parent(x);
+            i++;
+        }
+    }
+    if(x->get_child_count() == 0){
+        z->remove_child(x);
+        delete x;
+    }
+    if(y->get_child_count() == 0){
+        z->remove_child(y);
+        delete y;
+    }
 
+}
+
+void BalancedTreeK::Delete(const Key *dkey) {
+    Node* dNode = search_key(dkey);
+    Node* y = dNode->get_parent();
+    y->remove_child(dNode);
+    while(y != nullptr){
+        if(y->get_child_count()<K){
+            if(y != this->_root){
+                y = borrow_and_merge(y);
+            }
+            else{
+                this->_root = y->get_child(0);
+                y->set_parent(nullptr);
+                delete y;
+                return;
+            }
+        }
+        else{
+            y->update_key();
+            y = y->get_parent();
+        }
+    }
 }
 
 /*
@@ -279,4 +336,8 @@ const Value* BalancedTreeK::GetMaxValue(const Key *key1, const Key *key2) const{
             }
         }
     }
+}
+
+BalancedTreeK::~BalancedTreeK() {
+    // todo build destructor
 }

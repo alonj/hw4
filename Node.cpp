@@ -2,6 +2,7 @@
 // Created by alonj on 23-Dec-17.
 //
 
+#include <iostream>
 #include "Node.h"
 
 using namespace std;
@@ -20,7 +21,7 @@ int find_child_place(Node *parent, Node *child){
     else {
         int i = parent->get_child_count() - 1;
         while (*childKey < *(parent->get_child(i)->get_key()) && i > 0) {
-            i--;
+            i-- ;
         }
         return i;
     }
@@ -98,4 +99,11 @@ void Node::set_parent(Node *newParent, bool init) {
     newParent->add_child(this, place);
     this->update_key();
     this->update_val();
+}
+
+Node::~Node(){
+    /*delete _isLeaf;
+    delete count_children;
+    delete total_children;*/
+    cout<<"Node deleted"<<endl;
 }
