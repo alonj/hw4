@@ -21,7 +21,7 @@ int find_child_place(Node *parent, Node *child){
     else {
         int i = parent->get_child_count() - 1;
         while (*childKey < *(parent->get_child(i)->get_key()) && i > 0) {
-            i-- ;
+            i--;
         }
         return i;
     }
@@ -44,6 +44,7 @@ void Node::update_val(){
         if (get_child(i)->get_value() > this->_value){
             this->_value = get_child(i)->get_value();
         }
+        i++;
     }
 }
 
@@ -84,6 +85,7 @@ void Node::remove_child(Node *child) {
         this->_isLeaf = true;
     }
 }
+
 
 void Node::set_parent(Node *newParent, bool init) {
     int place=0;

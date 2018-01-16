@@ -107,6 +107,7 @@ int main()
 	for (unsigned i = 0;i < INITIAL_INSERT_NUM;i++)
 	{
 		T->Insert(my_keys_array[i], my_values_array[i]);
+		cout<<i<<endl;
 	}
 
 	unsigned operations_array[OPERATIONS_SIZE];

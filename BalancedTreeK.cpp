@@ -44,7 +44,6 @@ BalancedTreeK::BalancedTreeK(const Key *min, const Key *max){
     cout<<"Tree created"<<endl;
 }
 
-
 /*
  * Split nodes for Insert method
  * */
@@ -68,7 +67,6 @@ Node* insert_and_split(Node* y_parent, Node new_node){
     return new_internal;
 
 }
-
 
 /*
  * Insert new node (key, val) into the tree
@@ -105,14 +103,12 @@ void BalancedTreeK::Insert(const Key* nkey, const Value* nval){
     }
 }
 
-
 /*
  * Search value by known Key
  * */
 Value* BalancedTreeK::Search(const Key *key) const {
     return search_key(key)->get_value();
 }
-
 
 /*
  * Get ordered rank of known Key
@@ -137,7 +133,6 @@ unsigned BalancedTreeK::Rank(const Key *key) const {
         return 0;
     }
 }
-
 
 /*
  * Get key of known ordered rank
