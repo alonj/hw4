@@ -61,16 +61,20 @@ void Node::update_direct_children(){
 }
 
 void Node::update_total_children() {
-    if(_children[0]->isLeaf){
-        total_children = direct_children;
+    if(direct_children > 0) {
+        if (_children[0]->isLeaf) {
+            total_children = direct_children;
+        } else {
+            total_children = 0;
+            int i = 0;
+            while (_children[i] != nullptr) {
+                total_children += _children[i]->total_children;
+                i++;
+            }
+        }
     }
     else{
         total_children = 0;
-        int i = 0;
-        while(_children[i] != nullptr){
-            total_children += _children[i]->total_children;
-            i++;
-        }
     }
 }
 
@@ -121,21 +125,22 @@ void Node::set_parent(Node* newParent, bool init) {
     if(_parent != nullptr) {
         _parent->remove_child(this);
     }
-    _parent=newParent;
-    if (init) {
-        place = newParent->direct_children;
+    if(newParent != nullptr) {
+        _parent = newParent;
+        if (init) {
+            place = newParent->direct_children;
+        } else {
+            place = find_child_place(newParent, this);
+        }
+        if (newParent->direct_children == 0) {
+            place = 0;
+        }
+        newParent->add_child(this, place);
+        this->update_attributes();
+        newParent->update_attributes();
+        newParent->update_direct_children();
+        newParent->update_total_children();
     }
-    else {
-        place = find_child_place(newParent, this);
-    }
-    if(newParent->direct_children == 0){
-        place = 0;
-    }
-    newParent->add_child(this, place);
-    this->update_attributes();
-    newParent->update_attributes();
-    newParent->update_direct_children();
-    newParent->update_total_children();
 }
 
 Node::~Node(){

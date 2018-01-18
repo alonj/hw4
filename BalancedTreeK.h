@@ -24,6 +24,7 @@ public:
     const Key* Select(unsigned index) const;
     const Value* GetMaxValue(const Key* key1, const Key* key2) const;
     void print2(Node* nt = nullptr,int n = 0);
+    void print(){print2(_root, 0);};
 };
 
 #endif //HW4_KTREE_H

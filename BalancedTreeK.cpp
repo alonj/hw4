@@ -11,7 +11,7 @@ Node* BalancedTreeK::search_key(const Key* key) const{
     Node* y = _root;
     while(!y->isLeaf){
         int i=0;
-        while(*(y->get_child(i)->get_key()) < *key && y->get_child(i)->get_key() != nullptr){
+        while (i < y->direct_children && *(y->get_child(i)->get_key()) < *key) {
             i++;
         }
         y = y->get_child(i);
@@ -113,7 +113,12 @@ void BalancedTreeK::Insert(const Key* nkey, const Value* nval){
  * Search value by known Key
  * */
 Value* BalancedTreeK::Search(const Key *key) const {
-    return search_key(key)->get_value();
+    if(*(_root->get_key()) < *key ){
+        return nullptr;
+    }
+    else{
+        return search_key(key)->get_value();
+    }
 }
 
 /*
