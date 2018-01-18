@@ -15,11 +15,11 @@ int find_child_place(Node *parent, Node *child){
 /*    while(*(parent->get_child(i)->get_key())<*childKey && parent->get_child(i) != nullptr){
         i++;
     }*/
-    if(parent->get_child_count() == 0){
+    if(parent->direct_children == 0){
         return 0;
     }
     else {
-        int i = parent->get_child_count() - 1;
+        int i = parent->direct_children - 1;
         while (*childKey < *(parent->get_child(i)->get_key()) && i > 0) {
             i--;
         }
@@ -32,8 +32,8 @@ int find_child_place(Node *parent, Node *child){
  * update key to match highest key of children
  * */
 void Node::update_key(){
-    if(!_isLeaf) {
-        this->set_key(this->get_child(count_children - 1)->get_key());
+    if(!isLeaf) {
+        this->set_key(this->get_child(direct_children - 1)->get_key());
         this->_minKey = this->get_child(0)->get_key();
     }
 }
@@ -48,69 +48,87 @@ void Node::update_val(){
     }
 }
 
+void Node::update_direct_children(){
+    direct_children = 0;
+    while(_children[direct_children] != nullptr){
+        direct_children++;
+    }
+}
+
+void Node::update_total_children() {
+    if(_children[0]->isLeaf){
+        total_children = direct_children;
+    }
+    else{
+        total_children = 0;
+        int i = 0;
+        while(_children[i] != nullptr){
+            total_children += _children[i]->total_children;
+            i++;
+        }
+    }
+}
+
 /*
  * inserts child to children array in correct place, moves keys "greater than" to the right
  */
-void Node::add_child(Node *child, int place) {
-    for(int i=count_children; i>place; i--){
+void Node::add_child(Node* child, int place) {
+    for(int i=direct_children; i>place; i--){
         _children[i]=_children[i-1];
     }
     _children[place]=child;
-    if(this->_isLeaf){
-        this->_isLeaf = false;
-        this->total_children = 0;
-    }
-    count_children = 0;
-    while(_children[count_children] != nullptr) {
-        count_children++;
-    }
-    this->total_children = total_children + child->get_total_child(); // todo - check if counts correctly
+    this->isLeaf = false;
+    update_direct_children();
+    update_total_children();
 }
 
 /*
  * removes (known) child, moves all "greater than" to the left.
  * */
-void Node::remove_child(Node *child) {
+void Node::remove_child(Node* child) {
     int place = 0;
-    for(int i=0;i<count_children;i++){
+    for(int i=0;i<direct_children;i++){
         if(_children[i]==child){
             place=i;
         }
     }
-    for(int i=place;i<count_children;i++){
+    for(int i=place;i<direct_children;i++){
         _children[i]=_children[i+1];
     }
-    cout<<this<<": "<<count_children<<" before"<<endl;
-    count_children--;
-    cout<<this<<": "<<count_children<<" after"<<endl;
-    for(int i = count_children; i < 2*K-1; i++) {
+    update_direct_children();
+    for(int i = direct_children; i < 2*K-1; i++) {
         this->_children[i] = nullptr;
     }
-    if(count_children == 0){
-        this->_isLeaf = true;
+    if(direct_children == 0){
+        this->isLeaf = true;
+        total_children = 0;
     }
 }
 
 
-void Node::set_parent(Node *newParent, bool init) {
+void Node::set_parent(Node* newParent, bool init) {
     int place=0;
     if(this->_parent != nullptr) {
-                this->_parent->remove_child(this);
+                _parent->remove_child(this);
             }
     this->_parent=newParent;
     if (init) {
-        place = newParent->count_children;
+        place = newParent->direct_children;
     }
     else {
         place = find_child_place(newParent, this);
     }
+    if(newParent->direct_children == 0){
+        place = 0;
+    }
     newParent->add_child(this, place);
     this->update_key();
     this->update_val();
+    this->update_direct_children();
 }
 
 Node::~Node(){
-    /*delete _isLeaf;
-    delete count_children;
+    /*delete isLeaf;
+    delete direct_children;
     delete total_children;*/
 }

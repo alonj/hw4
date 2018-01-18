@@ -13,15 +13,15 @@
 
 class Node{
 private:
-    bool _isLeaf;
     Value* _value;
-    int count_children;
-    int total_children;
     Key* _key;
     Key* _minKey;
     Node* _children[2*K-1];
     Node* _parent;
 public:
+    int direct_children;
+    int total_children;
+    bool isLeaf;
     Node(Value* nvalue = nullptr, Key* nkey = nullptr){
         if(nvalue != nullptr){
             _value = nvalue;
@@ -30,12 +30,12 @@ public:
             _key = nkey;
         }
         _parent = nullptr;
-        for (auto &i : _children) {
-                i = nullptr;
+        for (int i = 0; i < 2*K-1; i++) {
+                _children[i] = nullptr;
         }
-        count_children = 0;
+        direct_children = 0;
         total_children = 1;
-        _isLeaf = true;
+        isLeaf = true;
         _minKey = _key; };
     ~Node();
     void add_child(Node* child, int place);
@@ -44,14 +44,15 @@ public:
     void set_key(Key* key){_key = key;};
     void update_key();
     void update_val();
+    void update_direct_children();
+    void update_total_children();
     Key* get_key(){return _key;};
     Key* get_minKey(){return _minKey;};
     Value* get_value(){return _value;};
     Node* get_child(int index){return _children[index];};
     Node* get_parent(){return _parent;};
-    const bool isLeaf(){return _isLeaf;};
-    const int get_child_count(){return count_children;}; // returns number of direct children
-    const int get_total_child(){return total_children;}; // returns total number of leaves in subtree
+    //const int get_child_count(){return direct_children;}; // returns number of direct children
+    //const int get_total_child(){return total_children;}; // returns total number of leaves in subtree
 };
 
 #endif //HW4_NODE_H
