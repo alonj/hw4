@@ -39,18 +39,23 @@ void Node::update_key(){
 }
 
 void Node::update_val(){
-    int i = 0;
-    while(this->get_child(i) != nullptr){
-        if (get_child(i)->get_value() > this->_value){
-            this->_value = get_child(i)->get_value();
+    if(this->get_value() != nullptr) {
+        for (int i = 0; i < this->direct_children; i++) {
+            if (_value < _children[i]->get_value()){
+                _value = _children[i]->get_value();
+            }
         }
-        i++;
     }
+}
+
+void Node::update_attributes(){
+    this->update_val();
+    this->update_key();
 }
 
 void Node::update_direct_children(){
     direct_children = 0;
-    while(_children[direct_children] != nullptr){
+    while(_children[direct_children] != nullptr && direct_children < 2*K - 1){
         direct_children++;
     }
 }
@@ -78,8 +83,8 @@ void Node::add_child(Node* child, int place) {
     }
     _children[place]=child;
     this->isLeaf = false;
-    update_direct_children();
-    update_total_children();
+    this->update_direct_children();
+    this->update_total_children();
 }
 
 /*
@@ -95,7 +100,7 @@ void Node::remove_child(Node* child) {
     for(int i=place;i<direct_children;i++){
         _children[i]=_children[i+1];
     }
-    update_direct_children();
+    this->update_direct_children();
     for(int i = direct_children; i < 2*K-1; i++) {
         this->_children[i] = nullptr;
     }
@@ -105,13 +110,17 @@ void Node::remove_child(Node* child) {
     }
 }
 
+void Node::nullify_child(int place){
+    _children[place] = nullptr;
+}
+
 
 void Node::set_parent(Node* newParent, bool init) {
     int place=0;
-    if(this->_parent != nullptr) {
+    if(_parent != nullptr) {
                 _parent->remove_child(this);
             }
-    this->_parent=newParent;
+    _parent=newParent;
     if (init) {
         place = newParent->direct_children;
     }
@@ -122,9 +131,9 @@ void Node::set_parent(Node* newParent, bool init) {
         place = 0;
     }
     newParent->add_child(this, place);
-    this->update_key();
-    this->update_val();
-    this->update_direct_children();
+    this->update_attributes();
+    newParent->update_attributes();
+    newParent->update_direct_children();
 }
 
 Node::~Node(){

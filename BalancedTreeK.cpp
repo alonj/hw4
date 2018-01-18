@@ -33,11 +33,11 @@ Node* BalancedTreeK::search_key(const Key* key) const{
  * Constructor
  * */
 BalancedTreeK::BalancedTreeK(const Key *min, const Key *max){
-    auto* minKey = min->clone();
-    auto* maxKey = max->clone();
-    auto* minNode = new Node(nullptr, minKey);
-    auto* maxNode = new Node(nullptr, maxKey);
-    auto* root = new Node;
+    Key* minKey = min->clone();
+    Key* maxKey = max->clone();
+    Node* minNode = new Node(nullptr, minKey);
+    Node* maxNode = new Node(nullptr, maxKey);
+    Node* root = new Node;
     minNode->set_parent(root, true);
     maxNode->set_parent(root, true);
     _root=root;
@@ -52,7 +52,7 @@ Node* insert_and_split(Node* y_parent, Node* new_node){
         return nullptr;
     }
     else {
-        auto *new_internal = new Node();
+        Node* new_internal = new Node();
         int split_point = K-1;
 
         /*
@@ -62,7 +62,9 @@ Node* insert_and_split(Node* y_parent, Node* new_node){
             split_point++;
         }
         for (int i = split_point; i < 2 * K - 1; i++) {
-            y_parent->get_child(split_point)->set_parent(new_internal);
+            Node* child = y_parent->get_child(split_point);
+            child->set_parent(new_internal);
+            y_parent->nullify_child(2*K-2-i+split_point);
         }
         new_internal->update_direct_children();
         y_parent->update_direct_children();
@@ -76,7 +78,7 @@ Node* insert_and_split(Node* y_parent, Node* new_node){
 void BalancedTreeK::Insert(const Key* nkey, const Value* nval){
     Key* key = nkey->clone();
     Value* val = nval->clone();
-    auto* z = new Node(val, key);
+    Node* z = new Node(val, key);
     Node* y = _root;
     while(!y->isLeaf){
         int i=y->direct_children-1;
@@ -93,18 +95,18 @@ void BalancedTreeK::Insert(const Key* nkey, const Value* nval){
             z = insert_and_split(x, z);
         }
         else {
-            x->update_key();
-            x->update_val();
+            x->update_attributes();
         }
     }
     if(z != nullptr){
-        auto* new_root = new Node;
-        z->update_key();
-        z->update_val();
-        x->set_parent(new_root);
+        Node* new_root = new Node;
+        z->update_attributes();
         z->set_parent(new_root);
+        x->update_attributes();
+        x->set_parent(new_root);
         _root = new_root;
     }
+    //print2(_root,0);
 }
 
 
@@ -224,7 +226,7 @@ void BalancedTreeK::Delete(const Key *dkey) {
             }
         }
         else{
-            y->update_key();
+            y->update_attributes();
             y = y->get_parent();
         }
     }
@@ -286,8 +288,46 @@ const Value* BalancedTreeK::GetMaxValue(const Key *key1, const Key *key2) const{
             }
         }
     }
+    return max;
 }
 
 BalancedTreeK::~BalancedTreeK() {
     // todo build destructor
+}
+
+void BalancedTreeK::print2(Node* nt,int n) {
+    if (nt == NULL) {
+        return;
+    }
+    else {
+        if (nt->get_key() != NULL) {
+            cout << "level : " << n;
+            cout << "\n my Max Key is : ";
+            cout<<nt->get_key()<<endl;
+            cout << "\n my Size is : ";
+            cout<< nt->direct_children;
+            Node * my_parent = nt->get_parent();
+            if (my_parent != NULL)
+            {
+                cout << "\n my Parent is : ";
+                cout<<my_parent->get_key()<<endl;
+            }
+            else cout << "\n I dont have a parent!";
+            if (nt->get_value() == NULL) {
+                cout << "\n I dont have a value";
+            }
+            else {
+                cout << "\n my Max Value is : ";
+                cout<<nt->get_value()<<endl;
+            }
+            if (nt->get_child(0) == NULL) {
+                cout << "\n im a leaf!";
+            }
+            cerr << "\n\n\n\n";
+            n++;
+            for (int i = 0; i <= 2 * K - 2; i++) {
+               print2(nt->get_child(i),n);
+            }
+        }
+    }
 }

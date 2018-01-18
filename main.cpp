@@ -106,17 +106,14 @@ int main()
 
     for (unsigned i = 0;i < INITIAL_INSERT_NUM;i++)
     {
-        cout<<"main: "<<i<<endl;
         T->Insert(my_keys_array[i], my_values_array[i]);
     }
-    cout<<endl<<"LINE 111"<<endl;
 
     unsigned operations_array[OPERATIONS_SIZE];
     for (unsigned i = 0;i < OPERATIONS_SIZE;i++)
     {
         operations_array[i] = generate_random_index(NUM_OF_OPERATIONS) + 1;
     }
-    cout<<"LINE 118"<<endl;
 
     MyValue* val = NULL;
     MyKey* key = NULL;

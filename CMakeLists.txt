@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.9)
 project(hw4)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 98)
 
 set(SOURCE_FILES
         BalancedTreeK.cpp

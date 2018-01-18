@@ -11,6 +11,8 @@
 #ifndef HW4_NODE_H
 #define HW4_NODE_H
 
+#define nullptr NULL
+
 class Node{
 private:
     Value* _value;
@@ -19,8 +21,8 @@ private:
     Node* _children[2*K-1];
     Node* _parent;
 public:
-    int direct_children;
-    int total_children;
+    unsigned direct_children;
+    unsigned total_children;
     bool isLeaf;
     Node(Value* nvalue = nullptr, Key* nkey = nullptr){
         if(nvalue != nullptr){
@@ -40,10 +42,12 @@ public:
     ~Node();
     void add_child(Node* child, int place);
     void remove_child(Node* child);
+    void nullify_child(int place);
     void set_parent(Node *newParent, bool init = false);
     void set_key(Key* key){_key = key;};
     void update_key();
     void update_val();
+    void update_attributes();
     void update_direct_children();
     void update_total_children();
     Key* get_key(){return _key;};
