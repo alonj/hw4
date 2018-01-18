@@ -101,6 +101,7 @@ void Node::remove_child(Node* child) {
         _children[i]=_children[i+1];
     }
     this->update_direct_children();
+    this->update_total_children();
     for(int i = direct_children; i < 2*K-1; i++) {
         this->_children[i] = nullptr;
     }
@@ -118,8 +119,8 @@ void Node::nullify_child(int place){
 void Node::set_parent(Node* newParent, bool init) {
     int place=0;
     if(_parent != nullptr) {
-                _parent->remove_child(this);
-            }
+        _parent->remove_child(this);
+    }
     _parent=newParent;
     if (init) {
         place = newParent->direct_children;
@@ -134,6 +135,7 @@ void Node::set_parent(Node* newParent, bool init) {
     this->update_attributes();
     newParent->update_attributes();
     newParent->update_direct_children();
+    newParent->update_total_children();
 }
 
 Node::~Node(){

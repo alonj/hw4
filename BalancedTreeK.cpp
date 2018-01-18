@@ -18,7 +18,7 @@ Node* BalancedTreeK::search_key(const Key* key) const{
     }
     y = y->get_parent();
     int n = 0;
-    while(y->get_child(n)->get_key() != key && n <= 2*K - 1){
+    while(y->get_child(n)->get_key() != key && n < y->direct_children-1){
         n++;
     }
     if(n == 2*K - 1){
@@ -106,7 +106,6 @@ void BalancedTreeK::Insert(const Key* nkey, const Value* nval){
         x->set_parent(new_root);
         _root = new_root;
     }
-    //print2(_root,0);
 }
 
 
@@ -192,10 +191,8 @@ Node* borrow_and_merge(Node* y){
         }
     }
     else{
-        int i = 0;
         while(y->direct_children > 0){
-            y->get_child(i)->set_parent(x);
-            i++;
+            y->get_child(0)->set_parent(x);
         }
     }
     if(x->direct_children == 0){
@@ -206,7 +203,7 @@ Node* borrow_and_merge(Node* y){
         z->remove_child(y);
         delete y;
     }
-
+    return z;
 }
 
 void BalancedTreeK::Delete(const Key *dkey) {
@@ -296,8 +293,8 @@ BalancedTreeK::~BalancedTreeK() {
 }
 
 void BalancedTreeK::print2(Node* nt,int n) {
-    if (nt == NULL) {
-        return;
+    if (nt == nullptr) {
+        nt = _root;
     }
     else {
         if (nt->get_key() != NULL) {
