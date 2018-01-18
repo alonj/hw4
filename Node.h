@@ -55,6 +55,7 @@ public:
     Value* get_value(){return _value;};
     Node* get_child(int index){return _children[index];};
     Node* get_parent(){return _parent;};
+    bool compare_key(const Key* other) const;
     //const int get_child_count(){return direct_children;}; // returns number of direct children
     //const int get_total_child(){return total_children;}; // returns total number of leaves in subtree
 };

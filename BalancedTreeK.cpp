@@ -18,10 +18,10 @@ Node* BalancedTreeK::search_key(const Key* key) const{
     }
     y = y->get_parent();
     int n = 0;
-    while(y->get_child(n)->get_key() != key && n < y->direct_children-1){
+    while(!(y->get_child(n)->compare_key(key)) && n < y->direct_children-1){
         n++;
     }
-    if(n == 2*K - 1){
+    if(n == 2*K - 1 or !(y->get_child(n)->compare_key(key))){
         return nullptr;
     }
     else{
@@ -117,7 +117,13 @@ Value* BalancedTreeK::Search(const Key *key) const {
         return nullptr;
     }
     else{
-        return search_key(key)->get_value();
+        Node* result = search_key(key);
+        if(result != nullptr){
+            return result->get_value();
+        }
+        else{
+            return nullptr;
+        }
     }
 }
 
@@ -133,7 +139,7 @@ unsigned BalancedTreeK::Rank(const Key *key) const {
         unsigned rank = 1;
         Node *y = x->get_parent();
         while (y != nullptr) {
-            int i =0;
+            int i = 0;
             while (y->get_child(i) != x) {
                 rank += y->get_child(i)->total_children;
                 i++;
@@ -302,41 +308,4 @@ const Value* BalancedTreeK::GetMaxValue(const Key *key1, const Key *key2) const{
 
 BalancedTreeK::~BalancedTreeK() {
     // todo build destructor
-}
-
-void BalancedTreeK::print2(Node* nt,int n) {
-    if (nt == nullptr) {
-        nt = _root;
-    }
-    else {
-        if (nt->get_key() != NULL) {
-            cout << "level : " << n;
-            cout << "\n my Max Key is : ";
-            cout<<nt->get_key()<<endl;
-            cout << "\n my Size is : ";
-            cout<< nt->direct_children;
-            Node * my_parent = nt->get_parent();
-            if (my_parent != NULL)
-            {
-                cout << "\n my Parent is : ";
-                cout<<my_parent->get_key()<<endl;
-            }
-            else cout << "\n I dont have a parent!";
-            if (nt->get_value() == NULL) {
-                cout << "\n I dont have a value";
-            }
-            else {
-                cout << "\n my Max Value is : ";
-                cout<<nt->get_value()<<endl;
-            }
-            if (nt->get_child(0) == NULL) {
-                cout << "\n im a leaf!";
-            }
-            cerr << "\n\n\n\n";
-            n++;
-            for (int i = 0; i <= 2 * K - 2; i++) {
-               print2(nt->get_child(i),n);
-            }
-        }
-    }
 }

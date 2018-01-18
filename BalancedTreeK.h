@@ -23,8 +23,6 @@ public:
     unsigned Rank(const Key* key) const;
     const Key* Select(unsigned index) const;
     const Value* GetMaxValue(const Key* key1, const Key* key2) const;
-    void print2(Node* nt = nullptr,int n = 0);
-    void print(){print2(_root, 1);};
 };
 
 #endif //HW4_KTREE_H

@@ -122,7 +122,6 @@ void Node::nullify_child(int place){
     _children[place] = nullptr;
 }
 
-
 void Node::set_parent(Node* newParent, bool init) {
     int place=0;
     if(_parent != nullptr) {
@@ -132,11 +131,12 @@ void Node::set_parent(Node* newParent, bool init) {
         _parent = newParent;
         if (init) {
             place = newParent->direct_children;
-        } else {
-            place = find_child_place(newParent, this);
         }
-        if (newParent->direct_children == 0) {
+        else if (newParent->direct_children == 0) {
             place = 0;
+        }
+        else {
+            place = find_child_place(newParent, this);
         }
         newParent->add_child(this, place);
         this->update_attributes();
@@ -144,6 +144,10 @@ void Node::set_parent(Node* newParent, bool init) {
         newParent->update_direct_children();
         newParent->update_total_children();
     }
+}
+
+bool Node::compare_key(const Key* other) const { // returns true if keys are same
+    return !(*(this->_key) < *other || *(other) < *(this->_key));
 }
 
 Node::~Node(){
