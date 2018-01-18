@@ -39,7 +39,10 @@ void Node::update_key(){
 }
 
 void Node::update_val(){
-    if(this->get_value() != nullptr) {
+    if(this->direct_children == 1){
+        _value = _children[0]->get_value();
+    }
+    else if(this->get_value() != nullptr) {
         for (int i = 0; i < this->direct_children; i++) {
             if (_value < _children[i]->get_value()){
                 _value = _children[i]->get_value();

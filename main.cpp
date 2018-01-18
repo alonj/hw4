@@ -102,7 +102,7 @@ int main()
         my_values_array[i] = new MyValue(values_array[i]);
     }
 
-    // T->print();
+    //T->print();
 
     unsigned inserted_keys_num = INITIAL_INSERT_NUM;
 

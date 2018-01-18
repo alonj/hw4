@@ -125,14 +125,17 @@ Value* BalancedTreeK::Search(const Key *key) const {
  * Get ordered rank of known Key
  * */
 unsigned BalancedTreeK::Rank(const Key *key) const {
+    if(*(_root->get_key())<*key) {
+        return 0;
+    }
     Node* x = search_key(key);
     if (x != nullptr) {
         unsigned rank = 1;
         Node *y = x->get_parent();
         while (y != nullptr) {
             int i =0;
-            while (x->get_parent()->get_child(i) != x) {
-                rank += x->get_parent()->get_child(i)->total_children;
+            while (y->get_child(i) != x) {
+                rank += y->get_child(i)->total_children;
                 i++;
             }
             x = y;
@@ -220,11 +223,15 @@ void BalancedTreeK::Delete(const Key *dkey) {
             if(y != this->_root){
                 y = borrow_and_merge(y);
             }
-            else{
+            else if(_root->direct_children == 1){
                 this->_root = y->get_child(0);
-                y->set_parent(nullptr);
+                _root->set_parent(nullptr);
                 delete y;
                 return;
+            }
+            else{
+                y->update_attributes();
+                y = y->get_parent();
             }
         }
         else{
