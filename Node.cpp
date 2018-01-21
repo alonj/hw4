@@ -129,16 +129,15 @@ void Node::remove_child(Node* child) {
         }
     }
     for(int i=place;i<direct_children;i++){ // direct_children-1 ??
-        if(i == direct_children-1){
+        if(direct_children==2*K-1 && i == direct_children-1){
             _children[i] = nullptr;
         }
         else{
             _children[i]=_children[i+1];
         }
     }
-    _children[direct_children] = nullptr;  // new line add
-    this->update_direct_children();
-    this->update_total_children();
+    _children[direct_children-1] = nullptr;  // new line add
+    this->update_attributes();
     for(int i = direct_children; i < 2*K-1; i++) {
         this->_children[i] = nullptr;
     }

@@ -69,7 +69,7 @@ Node* insert_and_split(Node* x, Node* z){ // ex. : x=E, z=Z
             Node* child = x->get_child(split_point);
             child->set_parent(y);
         }
-        if (*(x->get_child(K-1)->get_key()) < *z->get_key()) {
+        if (*(x->get_key()) < *(z->get_key())) {
             z->set_parent(y);
         }
         else{
@@ -89,20 +89,28 @@ void BalancedTreeK::Insert(const Key* nkey, const Value* nval){
     Value* val = nval->clone();
     Node* z = new Node(val, key);
     Node* y = _root;
-    while(!y->isLeaf){
+    /*while(!y->isLeaf){
         int i=y->direct_children-1;
         while(*key < *(y->get_child(i)->get_key()) && i > 0){   // why i>0 and not >= 0? it will never get to the childe in place 0
             i--;
         }
-        /*if(i != y->direct_children-1) {
+        *//*if(i != y->direct_children-1) {
               i++;
-        }*/
+        }*//*
         while(*(y->get_child(i)->get_key()) < *(key) && i < y->direct_children){
             i++;
         }
         y = y->get_child(i);
+    }*/
+    while(!y->get_child(0)->isLeaf){
+        int i = 0;
+        while(!(*nkey < *(y->get_child(i)->get_key()))){
+            i++;
+        }
+        y = y->get_child(i);
     }
-    Node* x = y->get_parent();
+    // Node* x = y->get_parent();
+    Node* x = y;
     z = insert_and_split(x, z);
     while(x != _root){
         x = x->get_parent();
@@ -121,6 +129,7 @@ void BalancedTreeK::Insert(const Key* nkey, const Value* nval){
         x->set_parent(new_root);
         _root = new_root;
     }
+
 }
 
 
