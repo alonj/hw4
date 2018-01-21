@@ -23,6 +23,9 @@ int find_child_place(Node *parent, Node *child){
         while (*childKey < *(parent->get_child(i)->get_key()) && i > 0) {
             i--;
         }
+        if(i != parent->direct_children -1){
+            i++;
+        }
         return i;
     }
 
@@ -33,7 +36,7 @@ int find_child_place(Node *parent, Node *child){
  * */
 void Node::update_key(){
     if(!isLeaf) {
-        this->set_key(this->get_child(direct_children - 1)->get_key());
+        this->set_key(this->get_child(direct_children - 1)->get_key()); //********** add ( befor this, ) after -1
         this->_minKey = this->get_child(0)->get_key();
     }
 }
@@ -52,6 +55,9 @@ void Node::update_val(){
 }
 
 void Node::update_attributes(){
+    this->update_direct_children();
+    this->update_total_children();
+    this->isLeaf = this->direct_children == 0;
     this->update_val();
     this->update_key();
 }
@@ -62,7 +68,18 @@ void Node::update_direct_children(){
         direct_children++;
     }
 }
-
+void Node::update_total_children() {
+    total_children = direct_children;
+    if (direct_children > 0 && !_children[0]->isLeaf) {
+        total_children = 0;
+        int i = 0;
+        while (_children[i] != nullptr && i < 2 * K - 1) {
+            total_children += _children[i]->total_children;
+            i++;
+        }
+    }
+}
+/*
 void Node::update_total_children() {
     if(direct_children > 0) {
         if (_children[0]->isLeaf) {
@@ -71,15 +88,24 @@ void Node::update_total_children() {
             total_children = 0;
             int i = 0;
             while (_children[i] != nullptr) {
+				cout << "u_t_c line 74 i s: " << i << endl;
                 total_children += _children[i]->total_children;
+				cout << "to_chi now is: " << total_children << endl;
                 i++;
+				cout << "u_t_c now i is: " << i << endl;
+
             }
+			cout << "u_t_c line 81" << endl;
         }
+		cout << "u_t_c line 83" << endl;
     }
     else{
+		cout << "u_t_c line 87" << endl;
         total_children = 0;
+		cout << "u_t_c total ch is" << endl;
     }
 }
+*/
 
 /*
  * inserts child to children array in correct place, moves keys "greater than" to the right
@@ -89,9 +115,7 @@ void Node::add_child(Node* child, int place) {
         _children[i]=_children[i-1];
     }
     _children[place]=child;
-    this->isLeaf = false;
-    this->update_direct_children();
-    this->update_total_children();
+    this->update_attributes();
 }
 
 /*
@@ -104,9 +128,11 @@ void Node::remove_child(Node* child) {
             place=i;
         }
     }
-    for(int i=place;i<direct_children;i++){
+    for(int i=place;i<direct_children;i++){ // direct_children-1 ??
         _children[i]=_children[i+1];
     }
+
+    _children[direct_children] = nullptr;  // new line add
     this->update_direct_children();
     this->update_total_children();
     for(int i = direct_children; i < 2*K-1; i++) {
@@ -124,25 +150,30 @@ void Node::nullify_child(int place){
 
 void Node::set_parent(Node* newParent, bool init) {
     int place=0;
-    if(_parent != nullptr) {
+    if(_parent != nullptr) {  // ********************** who's _parent?
         _parent->remove_child(this);
     }
     if(newParent != nullptr) {
-        _parent = newParent;
+        _parent = newParent;          // ************* _parent of who??
         if (init) {
-            place = newParent->direct_children;
+            newParent->add_child(this, newParent->direct_children);
         }
         else if (newParent->direct_children == 0) {
-            place = 0;
+            newParent->add_child(this, 0);
         }
         else {
-            place = find_child_place(newParent, this);
+            if (*(_parent->get_key()) < *(this->_key)){
+                place = _parent->direct_children;
+                _parent->_children[place] = this;
+                _parent->update_attributes();
+            }
+            else {
+                place = find_child_place(newParent, this);
+                newParent->add_child(this, place);
+            }
         }
-        newParent->add_child(this, place);
         this->update_attributes();
-        newParent->update_attributes();
-        newParent->update_direct_children();
-        newParent->update_total_children();
+        _parent->update_attributes();
     }
 }
 
@@ -154,4 +185,12 @@ Node::~Node(){
     /*delete isLeaf;
     delete direct_children;
     delete total_children;*/
+    //cout << "Node destructor" << endl;
+    delete _key;
+    delete _value;
+    for (int i = 0; i < 2 * K - 1; i++) {
+        delete _children[i];
+    }
+
+    //delete _children array
 }

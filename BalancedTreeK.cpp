@@ -9,6 +9,9 @@
  * */
 Node* BalancedTreeK::search_key(const Key* key) const{
     Node* y = _root;
+    if (*(y->get_key()) < *key) {            //********
+        return nullptr;                      //***********
+    }
     while(!y->isLeaf){
         int i=0;
         while (i < y->direct_children && *(y->get_child(i)->get_key()) < *key) {
@@ -46,9 +49,10 @@ BalancedTreeK::BalancedTreeK(const Key *min, const Key *max){
 /*
  * Split nodes for Insert method
  * */
-Node* insert_and_split(Node* y_parent, Node* new_node){
-    if(y_parent->direct_children < 2*K - 1){
-        new_node->set_parent(y_parent);
+Node* insert_and_split(Node* x, Node* new_node){ // ex. : x=E, new_node=Z
+    if(x->direct_children < 2*K - 1){
+
+        new_node->set_parent(x);
         return nullptr;
     }
     else {
@@ -58,16 +62,16 @@ Node* insert_and_split(Node* y_parent, Node* new_node){
         /*
          * If new node is larger than mid-point node, split the array after the middle point (k-1 nodes remain in new parent)
          * */
-        if (*(y_parent->get_child(K-1)->get_key()) < *new_node->get_key()) {
+        if (*(x->get_child(K-1)->get_key()) < *new_node->get_key()) {
             split_point++;
         }
         for (int i = split_point; i < 2 * K - 1; i++) {
-            Node* child = y_parent->get_child(split_point);
+            Node* child = x->get_child(split_point);
             child->set_parent(new_internal);
-            y_parent->nullify_child(2*K-2-i+split_point);
+            //x->nullify_child(2*K-2-i+split_point);
         }
-        new_internal->update_direct_children();
-        y_parent->update_direct_children();
+        new_internal->update_attributes();
+        x->update_attributes();
         return new_internal;
     }
 }
@@ -82,8 +86,11 @@ void BalancedTreeK::Insert(const Key* nkey, const Value* nval){
     Node* y = _root;
     while(!y->isLeaf){
         int i=y->direct_children-1;
-        while(*key < *(y->get_child(i)->get_key()) && i > 0){
+        while(*key < *(y->get_child(i)->get_key()) && i > 0){   // why i>0 and not >= 0? it will never get to the childe in place 0
             i--;
+        }
+        if(i != y->direct_children-1) {
+              i++;
         }
         y = y->get_child(i);
     }
@@ -222,6 +229,10 @@ Node* borrow_and_merge(Node* y){
 
 void BalancedTreeK::Delete(const Key *dkey) {
     Node* dNode = search_key(dkey);
+    if (dNode == nullptr)                       //*************
+    {
+        return;                                //*************
+    }
     Node* y = dNode->get_parent();
     y->remove_child(dNode);
     while(y != nullptr){
@@ -308,4 +319,5 @@ const Value* BalancedTreeK::GetMaxValue(const Key *key1, const Key *key2) const{
 
 BalancedTreeK::~BalancedTreeK() {
     // todo build destructor
+    delete _root;
 }

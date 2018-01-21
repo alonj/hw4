@@ -25,20 +25,20 @@ public:
     unsigned total_children;
     bool isLeaf;
     Node(Value* nvalue = nullptr, Key* nkey = nullptr){
-        if(nvalue != nullptr){
-            _value = nvalue;
-        }
-        if(nkey != nullptr){
-            _key = nkey;
-        }
-        _parent = nullptr;
-        for (int i = 0; i < 2*K-1; i++) {
-                _children[i] = nullptr;
-        }
-        direct_children = 0;
-        total_children = 1;
-        isLeaf = true;
-        _minKey = _key; };
+            if(nvalue != nullptr){
+                    _value = nvalue;
+            }
+            if(nkey != nullptr){
+                    _key = nkey;
+            }
+            _parent = nullptr;
+            for (int i = 0; i < 2*K-1; i++) {
+                    _children[i] = nullptr;
+            }
+            direct_children = 0;
+            total_children = 1;
+            isLeaf = true;
+            _minKey = _key; };
     ~Node();
     void add_child(Node* child, int place);
     void remove_child(Node* child);
