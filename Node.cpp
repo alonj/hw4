@@ -129,9 +129,13 @@ void Node::remove_child(Node* child) {
         }
     }
     for(int i=place;i<direct_children;i++){ // direct_children-1 ??
-        _children[i]=_children[i+1];
+        if(i == direct_children-1){
+            _children[i] = nullptr;
+        }
+        else{
+            _children[i]=_children[i+1];
+        }
     }
-
     _children[direct_children] = nullptr;  // new line add
     this->update_direct_children();
     this->update_total_children();
@@ -142,10 +146,6 @@ void Node::remove_child(Node* child) {
         this->isLeaf = true;
         total_children = 0;
     }
-}
-
-void Node::nullify_child(int place){
-    _children[place] = nullptr;
 }
 
 void Node::set_parent(Node* newParent, bool init) {

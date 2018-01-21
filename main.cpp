@@ -102,15 +102,12 @@ int main()
         my_values_array[i] = new MyValue(values_array[i]);
     }
 
-    //T->print();
-
     unsigned inserted_keys_num = INITIAL_INSERT_NUM;
 
     for (unsigned i = 0;i < INITIAL_INSERT_NUM;i++)
     {
         T->Insert(my_keys_array[i], my_values_array[i]);
     }
-    // T->print2();
 
     unsigned operations_array[OPERATIONS_SIZE];
     for (unsigned i = 0;i < OPERATIONS_SIZE;i++)
