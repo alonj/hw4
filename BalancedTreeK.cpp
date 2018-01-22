@@ -85,23 +85,17 @@ Node* insert_and_split(Node* x, Node* z){ // ex. : x=E, z=Z
  * Insert new node (key, val) into the tree
  * */
 void BalancedTreeK::Insert(const Key* nkey, const Value* nval){
-    Key* key = nkey->clone();
-    Value* val = nval->clone();
+    Key* key;
+    Value* val;
+    if(nkey != nullptr && nval != nullptr){
+        key = nkey->clone();
+        val = nval->clone();
+    }
+    else {
+        return;
+    }
     Node* z = new Node(val, key);
     Node* y = _root;
-    /*while(!y->isLeaf){
-        int i=y->direct_children-1;
-        while(*key < *(y->get_child(i)->get_key()) && i > 0){   // why i>0 and not >= 0? it will never get to the childe in place 0
-            i--;
-        }
-        *//*if(i != y->direct_children-1) {
-              i++;
-        }*//*
-        while(*(y->get_child(i)->get_key()) < *(key) && i < y->direct_children){
-            i++;
-        }
-        y = y->get_child(i);
-    }*/
     while(!y->get_child(0)->isLeaf){
         int i = 0;
         while(!(*nkey < *(y->get_child(i)->get_key()))){
@@ -171,7 +165,7 @@ unsigned BalancedTreeK::Rank(const Key *key) const {
             x = y;
             y = y->get_parent();
         }
-        return rank;
+        return rank-1;
     }
     else{
         return 0;
@@ -183,15 +177,12 @@ unsigned BalancedTreeK::Rank(const Key *key) const {
  * */
 const Key* BalancedTreeK::Select(unsigned index) const {
     Node* x = _root;
-    if(x->total_children < index){
+    index++;
+    if(x->total_children-1 < index){
         return nullptr;
     }
     else if(x->isLeaf){
         return x->get_key();
-    }
-    if(index > x->total_children-1)
-    {
-        return nullptr;
     }
     else {
         while (!x->isLeaf) {
