@@ -36,8 +36,8 @@ int find_child_place(Node *parent, Node *child){
  * */
 void Node::update_key(){
     if(!isLeaf) {
-        this->set_key(this->get_child(direct_children - 1)->get_key()); //********** add ( befor this, ) after -1
-        this->_minKey = this->get_child(0)->get_key();
+        this->set_key(this->get_child(direct_children - 1)->get_key());
+        this->_minKey = this->get_child(0)->get_minKey();
     }
 }
 
@@ -161,7 +161,7 @@ void Node::set_parent(Node* newParent, bool init) {
             newParent->add_child(this, 0);
         }
         else {
-            if (*(_parent->get_key()) < *(this->_key)){
+            if (!(*(this->_key)<*(_parent->get_key()))){
                 place = _parent->direct_children;
                 _parent->_children[place] = this;
                 _parent->update_attributes();
