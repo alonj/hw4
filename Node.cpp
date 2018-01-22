@@ -42,14 +42,12 @@ void Node::update_key(){
 }
 
 void Node::update_val(){
-    if(this->direct_children == 1){
-        _value = _children[0]->get_value();
+    if(direct_children > 1){
+        _value = _children[1]->_value;
     }
-    else if(this->get_value() != nullptr) {
-        for (int i = 0; i < this->direct_children; i++) {
-            if (_value < _children[i]->get_value()){
-                _value = _children[i]->get_value();
-            }
+    for (int i = 0; i < this->direct_children; i++) {
+        if (!_children[i]->sentinel && _value < _children[i]->get_value()){
+            _value = _children[i]->get_value();
         }
     }
 }
@@ -68,6 +66,7 @@ void Node::update_direct_children(){
         direct_children++;
     }
 }
+
 void Node::update_total_children() {
     total_children = direct_children;
     if (direct_children > 0 && !_children[0]->isLeaf) {

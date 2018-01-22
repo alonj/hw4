@@ -24,6 +24,7 @@ public:
     unsigned direct_children;
     unsigned total_children;
     bool isLeaf;
+    bool sentinel;
     Node(Value* nvalue = nullptr, Key* nkey = nullptr){
             if(nvalue != nullptr){
                     _value = nvalue;
@@ -38,6 +39,7 @@ public:
             direct_children = 0;
             total_children = 1;
             isLeaf = true;
+            sentinel = false;
             _minKey = _key; };
     ~Node();
     void add_child(Node* child, int place);

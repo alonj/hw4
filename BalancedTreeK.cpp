@@ -41,6 +41,8 @@ BalancedTreeK::BalancedTreeK(const Key *min, const Key *max){
     Node* minNode = new Node(nullptr, minKey);
     Node* maxNode = new Node(nullptr, maxKey);
     Node* root = new Node;
+    minNode->sentinel = true;
+    maxNode->sentinel = true;
     minNode->set_parent(root, true);
     maxNode->set_parent(root, true);
     _root=root;
@@ -188,7 +190,7 @@ const Key* BalancedTreeK::Select(unsigned index) const {
         while (!x->isLeaf) {
             int count_sum_siblings = 0;
             int i = 0;
-            while (index > count_sum_siblings + x->get_child(i)->total_children) {
+            while (i < x->direct_children-1 && index > count_sum_siblings + x->get_child(i)->total_children) {
                 count_sum_siblings += x->get_child(i)->total_children;
                 i++;
             }
@@ -273,7 +275,9 @@ const Value* BalancedTreeK::GetMaxValue(const Key *key1, const Key *key2) const{
     Key* zero_key = this->Select(0)->clone();
     unsigned left_boundary = this->Rank(key1);
     unsigned right_boundary = this->Rank(key2);
-    if (left_boundary == 0 && (*zero_key < *key1 || *key1 < *zero_key)) {
+    Node* left = search_key(Select(left_boundary));
+    Node* right = search_key(Select(right_boundary));
+    if (left_boundary == 0 && (*zero_key < *key1 || *key1 < *zero_key)) { // rank = 0 either didnt find or real 0, check if key1 different to actual key in place 0.
         Node *y = _root;
         while (!y->isLeaf) {
             int i = 0;
@@ -282,6 +286,7 @@ const Value* BalancedTreeK::GetMaxValue(const Key *key1, const Key *key2) const{
             }
             y = y->get_child(i);
         }
+        left = y;
         left_boundary = this->Rank(y->get_key());
     }
     if (right_boundary == 0 && (*zero_key < *key2 || *key2 < *zero_key)) {
@@ -297,16 +302,18 @@ const Value* BalancedTreeK::GetMaxValue(const Key *key1, const Key *key2) const{
             y = y->get_child(i);
         }
         right_boundary = this->Rank(y->get_key()) - 1;
+        right = search_key(Select(right_boundary));
     }
-    Value* max = nullptr;
-    Node* x = search_key(this->Select(left_boundary));
+    Value* max = *left->get_value()<*right->get_value()?right->get_value():left->get_value();
+    Node* x = left;
     Node* x_parent = x->get_parent();
-    while(*(x_parent->get_key()) < *this->Select(right_boundary)) { // define the while
+    while(*(x_parent->get_key()) < *(right->get_key())) { // define the while
         for(int i = 0; i < x_parent->direct_children; i++){
             if(*max < *(x_parent->get_child(i)->get_value()) && *x->get_key() < *(x_parent->get_child(i)->get_key())){
                 max = x_parent->get_child(i)->get_value();
             }
         }
+        x = x_parent;
         x_parent = x->get_parent();
     }
     for(int i = left_boundary; i < x_parent->direct_children; i++){
@@ -316,11 +323,18 @@ const Value* BalancedTreeK::GetMaxValue(const Key *key1, const Key *key2) const{
     }
 
     while(!x->isLeaf){ // todo properly search key down the tree
+        int j = 0;
         for(int i = 0; i < x_parent->direct_children; i++){
             if(*max < *(x_parent->get_child(i)->get_value()) && *(x_parent->get_child(i)->get_key()) < *x->get_key()){
                 max = x_parent->get_child(i)->get_value();
             }
+            if(j == 0 && *(right->get_key())<*(x_parent->get_child(i)->get_key())){
+                j = i;
+            }
         }
+        x = x->get_child(j);
+        x_parent = x->get_parent();
+
     }
     return max;
 }
