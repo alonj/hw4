@@ -120,8 +120,10 @@ int main()
     MyKey* key1 = NULL;
     unsigned rank;
     unsigned index;
+
     for (unsigned i = 0;i < OPERATIONS_SIZE;i++)
     {
+        cout<<endl;
         switch (operations_array[i])
         {
             case INSERT:
